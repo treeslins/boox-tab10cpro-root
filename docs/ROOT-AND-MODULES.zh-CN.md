@@ -139,7 +139,7 @@ LSPosed 需要 Zygisk。此设备记录中使用 Magisk 内置 Zygisk。ZygiskNe
 
 ### Tab10CPro 4.2.1 修复模块
 
-本机对应的模块 ZIP 名称为 `boox-ams-fix-tab10cpro-4.2.1.zip`，模块 ID 为 `boox-ams-fix-tab10cpro-421`。模块以 Magisk systemless overlay 替换 framework 的 `services.jar`，清理相关 Dalvik 缓存后重启生效。ZIP SHA-256：
+本机对应的模块 ZIP 名称为 [`boox-ams-fix-tab10cpro-4.2.1.zip`](../modules/boox-ams-fix-tab10cpro-4.2.1.zip)，模块 ID 为 `boox-ams-fix-tab10cpro-421`。模块以 Magisk systemless overlay 替换 framework 的 `services.jar`，清理相关 Dalvik 缓存后重启生效。ZIP SHA-256：
 
 ```text
 2EE43415F45772FE823CDB8E17694CE118A6304596FC0C2D622DEB0206012038
@@ -163,9 +163,10 @@ LSPosed 需要 Zygisk。此设备记录中使用 Magisk 内置 Zygisk。ZygiskNe
 - [BOOX Tab10CPro 刷机/root 实机参考](https://doc.yoouu.cn/interest/flash/tab10cpro.html#root)（其中工具与分区操作仅适用于作者自己的设备环境）
 - [decryptBooxUpdateUpx](https://github.com/Hagb/decryptBooxUpdateUpx)
 - [payload-dumper-go](https://github.com/ssut/payload-dumper-go)
-- [Qualcomm SDM855 factory loaders](https://github.com/bkerler/Loaders/tree/main/qualcomm/factory/sdm855)
+- [GeekFlashTool 高通资源包（维护者下载页）](https://gitee.com/geekflashtool/Package_Qualcomm_EDL)`r`n- [Qualcomm SDM855 factory loaders](https://github.com/bkerler/Loaders/tree/main/qualcomm/factory/sdm855)
 
 本指南是针对已记录设备的经验记录，不是厂商支持或通用刷机保证。请只在自有且获准操作的设备上使用；刷写风险由操作者承担。
+
 
 
 

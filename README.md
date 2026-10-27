@@ -7,7 +7,7 @@
 ## 内容
 
 - `docs/ROOT-AND-MODULES.zh-CN.md`：详细 ROOT 流程，重点包括 Qualcomm 工具箱 EDL 回读全分区、生成 GPT/XML、Magisk 修补及活动槽位 boot 写入边界
-- `tools/Tab10CPro-Root-Module.ps1`：Windows PowerShell 辅助脚本，检测 ADB/root 并安装用户选择的模块 ZIP
+- `tools/Tab10CPro-Root-Module.ps1`：Windows PowerShell 辅助脚本，检测 ADB/root 并安装用户选择的模块 ZIP`r`n- `modules/boox-ams-fix-tab10cpro-4.2.1.zip`：Tab10CPro 固件 4.2.1 专用 Magisk systemless 模块，用于修复 ROOT 后 Magisk 卡在启动页
 - `一键ROOT并安装模块.cmd`：启动入口
 
 ## 快速开始
@@ -24,7 +24,7 @@
 
 本次设备操作记录：BOOX Tab10CPro，Android 13 / SDK 33，固件 4.2.1；Magisk 30.7（内部版本 30700）；Magisk 内置 Zygisk 已启用。通过与该固件匹配的 boot 镜像修补并刷入后，重启验证 root 可用。曾安装 LSPosed v2.2.1（build 7912）作为 Magisk/Zygisk 模块。此记录不代表所有同型号设备或后续固件都适用。
 
-本仓库不包含、也不托管：boot/recovery/完整固件镜像、EDL programmer、设备分区备份、商业 APK、Magisk/LSPosed/ZygiskNext 二进制文件。请从各项目的官方渠道获取工具，并在使用前核对校验值与发布信息。
+本仓库不包含 boot/recovery/完整固件镜像、EDL programmer、设备分区备份、商业 APK、Magisk/LSPosed/ZygiskNext 安装包。仓库内的 AMS 修复模块仅匹配 Tab10CPro 固件 4.2.1；Qualcomm 工具箱从维护者的 [GeekFlashTool 高通资源包](https://gitee.com/geekflashtool/Package_Qualcomm_EDL)获取，本仓库不重新分发该第三方工具集。
 
 ## 参考资料
 
@@ -38,6 +38,7 @@
 ## 免责声明
 
 本仓库仅供设备所有者研究和维护自有设备。刷机/ROOT 可能造成数据丢失、系统损坏或安全性下降；不提供任何保证。请勿在未经许可的设备上操作。第三方工具与模块由其各自作者负责。
+
 
 
 
