@@ -7,7 +7,8 @@
 ## 内容
 
 - `docs/ROOT-AND-MODULES.zh-CN.md`：详细 ROOT 流程，重点包括 Qualcomm 工具箱 EDL 回读全分区、生成 GPT/XML、Magisk 修补及活动槽位 boot 写入边界
-- `tools/Tab10CPro-Root-Module.ps1`：Windows PowerShell 辅助脚本，检测 ADB/root 并安装用户选择的模块 ZIP`r`n- `modules/boox-ams-fix-tab10cpro-4.2.1.zip`：Tab10CPro 固件 4.2.1 专用 Magisk systemless 模块，用于修复 ROOT 后 Magisk 卡在启动页
+- `tools/Tab10CPro-Root-Module.ps1`：Windows PowerShell 辅助脚本，检测 ADB/root 并安装用户选择的模块 ZIP
+- `modules/boox-ams-fix-tab10cpro-4.2.1.zip`：Tab10CPro 固件 4.2.1 专用 Magisk systemless 模块，用于修复 ROOT 后 Magisk 卡在启动页
 - `一键ROOT并安装模块.cmd`：启动入口
 
 ## 快速开始
@@ -38,6 +39,7 @@
 ## 免责声明
 
 本仓库仅供设备所有者研究和维护自有设备。刷机/ROOT 可能造成数据丢失、系统损坏或安全性下降；不提供任何保证。请勿在未经许可的设备上操作。第三方工具与模块由其各自作者负责。
+
 
 
 
