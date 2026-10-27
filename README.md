@@ -2,11 +2,11 @@
 
 记录 BOOX Tab10CPro（本指南验证设备：Tab10CPro，Android 13，BOOX 固件 4.2.1）使用 Magisk 获取 root、检查 root 状态与安装 Magisk 模块的流程。固件/系统更新会改变适用性；请先核对自己的完整型号和构建号，不要把本指南当作通用 BOOX 刷机包。
 
-> **重要风险**：解锁 bootloader、修补/刷写 boot 镜像可能清除数据、触发启动失败或影响保修。公开仓库不提供设备镜像，也不会自动刷写任何分区。仅使用本机当前固件对应的官方 boot 镜像；先备份并准备可用的官方恢复包/救援方式。操作风险由设备所有者自行承担。
+> **重要风险**：解锁 bootloader、修补/刷写 boot 镜像可能清除数据、触发启动失败或影响保修。公开仓库不提供设备镜像，也不会自动刷写任何分区。优先使用 Qualcomm 工具箱从本机回读的原始 boot；也可使用与本机当前构建严格匹配的官方镜像。先备份并准备可用的官方恢复包/救援方式。操作风险由设备所有者自行承担。
 
 ## 内容
 
-- `docs/ROOT-AND-MODULES.zh-CN.md`：详细 ROOT 流程（固件镜像、解锁检查、Magisk 修补、槽位确认、写入边界、验证与恢复）
+- `docs/ROOT-AND-MODULES.zh-CN.md`：详细 ROOT 流程，重点包括 Qualcomm 工具箱 EDL 回读全分区、生成 GPT/XML、Magisk 修补及活动槽位 boot 写入边界
 - `tools/Tab10CPro-Root-Module.ps1`：Windows PowerShell 辅助脚本，检测 ADB/root 并安装用户选择的模块 ZIP
 - `一键ROOT并安装模块.cmd`：启动入口
 
@@ -16,7 +16,7 @@
 2. 解压本仓库；把 `adb.exe` 放在 `tools` 目录，或将 platform-tools 加入 `PATH`。
 3. 双击 `一键ROOT并安装模块.cmd`，首次连接时在设备上确认 USB 调试授权。
 4. 已有 Magisk root 时，脚本可选择模块 ZIP 并请求 Magisk 安装。检查 ZIP 来源与兼容性，并对 SHA-256 做独立核验。
-5. 若尚未 root，脚本只显示提示，不会下载、修补或刷写 boot 镜像。请先按 [详细 ROOT 指南](docs/ROOT-AND-MODULES.zh-CN.md)完成手动流程。
+5. 若尚未 root，先按[详细 ROOT 指南](docs/ROOT-AND-MODULES.zh-CN.md)操作：用 Qualcomm 工具箱回读全分区并生成 GPT/XML，取当前槽位 boot 给 Magisk 修补，再按设备专用流程处理目标分区。脚本本身不会刷写。
 
 **本仓库没有一键解锁或自动刷 boot 功能。**脚本不会自动重启、不会挑选 `.img` 文件，也不会尝试绕过 bootloader 锁或 Magisk 的授权界面。首次 ROOT 的准确步骤见详细指南。Android 端如果出现超级用户授权，由设备所有者亲自确认。
 
@@ -38,4 +38,6 @@
 ## 免责声明
 
 本仓库仅供设备所有者研究和维护自有设备。刷机/ROOT 可能造成数据丢失、系统损坏或安全性下降；不提供任何保证。请勿在未经许可的设备上操作。第三方工具与模块由其各自作者负责。
+
+
 
