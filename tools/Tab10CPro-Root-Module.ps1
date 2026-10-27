@@ -63,11 +63,12 @@ try {
         Write-Host "ROOT 已可用：$idResult" -ForegroundColor Green
     } else {
         Write-Host '当前 ADB shell 尚未获得 root。首次 ROOT 请按以下步骤完成：' -ForegroundColor Yellow
-        Write-Host '  1. 在 Magisk App 中检查版本，并启用 Magisk 自带 Zygisk（若计划使用 Zygisk 模块）。'
-        Write-Host '  2. 准备与设备当前固件完全匹配的原始 boot.img；不要使用其他固件或其他设备镜像。'
-        Write-Host '  3. 在 Magisk App 选择“安装 > 选择并修补一个文件”，生成 patched boot 镜像。'
-        Write-Host '  4. 先保留原始 boot.img 和恢复方案；只有确认本机 boot 分区布局、解锁状态和镜像匹配后才刷写。'
-        Write-Host '  5. 重启后重新运行本工具；确认出现 uid=0(root) 后即可安装模块。'
+        Write-Host '  1. 备份数据/原始分区，确认官方恢复包可用。'
+        Write-Host '  2. 用 fastboot 确认 bootloader unlocked: yes，并记录 current-slot；状态不明就停止。'
+        Write-Host '  3. 准备本机当前构建的原始 boot.img，在 Magisk 中修补并保存本次生成的 patched 镜像。'
+        Write-Host '  4. 只按设备专用指南写入当前活动槽位 boot 分区；不要猜槽位或使用其他用途 IMG。'
+        Write-Host '  5. 重启后运行 adb shell su -c id 验证 uid=0(root)，再用本工具装模块。'
+        Write-Host '详细步骤：docs\ROOT-AND-MODULES.zh-CN.md'
         Write-Host ''
         Write-Host '为避免误刷导致无法启动，本工具不会自动刷 boot，也不会触碰目录里已有 IMG。' -ForegroundColor Red
         Pause-Exit 2
@@ -105,6 +106,7 @@ try {
     Write-Host "`n发生错误：$($_.Exception.Message)" -ForegroundColor Red
     Pause-Exit 1
 }
+
 
 
 
