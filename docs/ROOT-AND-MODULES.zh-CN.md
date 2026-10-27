@@ -2,17 +2,18 @@
 
 本文记录本仓库对应的实机流程：BOOX Tab10CPro、Android 13（SDK 33）、BOOX 固件 4.2.1、Magisk 30.7。固件构建号变更、OTA 更新、同名设备的区域版本差异，都可能令镜像或分区信息不再适用。每次操作前请按设备“关于本机”核对完整型号和构建号。
 
-> **风险提示**：解锁 bootloader 可能清空数据；写错槽位或写入不匹配镜像可能导致无法启动。开始前备份数据、原始分区和官方恢复包。本文不提供固件、boot 镜像或 firehose programmer；请勿使用本地目录里来源不明或注明用于其他用途的 IMG。
+> **风险提示**：解锁 bootloader 可能清空数据；写错槽位或写入不匹配镜像可能导致无法启动。开始前备份数据、原始分区和官方恢复包。本文不提供固件、boot 镜像或 firehose programmer；原始 boot 应从本机全分区回读中取得，或来自与本机当前构建严格匹配的官方固件。请勿使用注明用于其他用途的 IMG。
 
 ## 总体流程
 
 ```text
-确认型号/构建和恢复路径
-  → 确认 bootloader 已解锁
-  → 获取本机当前构建的原始 boot 镜像
-  → 在设备 Magisk App 中修补
-  → 读取当前槽位并只写对应 boot 分区
-  → 重启并验证 uid=0(root)
+确认型号/构建、恢复路径和当前槽位
+  → 用 Qualcomm 工具箱进入 EDL 并读取全分区
+  → 生成并保存 GPT/XML 与完整分区备份
+  → 从当前活动槽位的 boot 备份取镜像
+  → 在 Magisk App 中修补该镜像
+  → 用工具只写回对应的 boot_<槽位>
+  → 启动并验证 uid=0(root)
 ```
 
 Magisk 官方要求 bootloader 解锁后才继续首次安装；首次安装要修补含 ramdisk 的正确镜像，可能是 `boot.img`、`init_boot.img` 或 `vendor_boot.img`，具体由设备结构决定。不要仅凭“Android 13”就猜分区。官方说明：[Magisk Installation](https://github.com/topjohnwu/Magisk/blob/master/docs/install.md)。
@@ -20,7 +21,7 @@ Magisk 官方要求 bootloader 解锁后才继续首次安装；首次安装要�
 ## 0. 准备与恢复
 
 1. 备份设备上的书籍、下载内容和其他重要数据。解锁流程可能会 factory reset。
-2. 提前取得该设备、该区域、当前完整构建号的官方固件包，并确认官方恢复流程可用。把原始 boot 分区备份到电脑和另一份安全存储中。
+2. 确认官方恢复流程可用；按第 2 节用 Qualcomm 工具箱回读全分区，生成并异地保存 GPT、XML 与分区备份。
 3. Windows 安装 Android SDK Platform-Tools，确认 `adb.exe`、`fastboot.exe` 正常。设备启用开发者选项/USB 调试；连接后在设备上接受 RSA 授权。
 4. 下载 Magisk App 只从 [Magisk 官方仓库](https://github.com/topjohnwu/Magisk)进入 Releases。不要从网盘重打包下载 patched boot。
 5. 若没有经过验证的当前固件镜像、分区表或恢复方案，先停在这里，不要刷写。
@@ -40,43 +41,56 @@ fastboot getvar current-slot
 - `current-slot` 可能返回 `a` 或 `b`。把结果记录下来；如果查询不支持，需用设备上可验证的分区信息确认，不能猜 `boot_a`/`boot_b`。
 - 解锁仅使用此型号/地区的可靠官方说明。不要用其他 BOOX 型号的 unlock 命令；解锁会清除数据。若无法确认官方支持解锁，不要继续。
 
-## 2. 获取与固件严格匹配的原始镜像
+## 2. 用高通工具箱回读全分区并生成 GPT/XML（主流程）
 
-有两种取镜像的方式，选能证明版本匹配且更可靠的一种。两种方式取到的镜像都要先备份，不能把其他目的的 IMG 当成输入。
+本设备记录的关键准备步骤是：使用 Qualcomm 工具箱通过 EDL **回读全分区**，并让工具生成 GPT 和 XML。此过程先做完整备份、确认分区映射，再从回读结果中取得当前活动槽位的 boot 镜像给 Magisk 修补。不要跳过 GPT/XML，也不要把“读取”误做成“写入”。
 
-### A. 从官方 OTA 包提取（优先）
+### 2.1 先确认槽位并进入 EDL
 
-1. 通过设备的官方更新渠道取得 Tab10CPro 当前构建的更新包。确认下载包的型号、区域、版本号与设备构建完全对应。
-2. 若文件是 BOOX `.upx` 包，按 [decryptBooxUpdateUpx](https://github.com/Hagb/decryptBooxUpdateUpx) 的项目说明准备依赖；在 PowerShell 中用设备型号 `Tab10CPro` 解密。命令格式如下，路径替换成你自己的真实文件路径：
+1. 在 Android 仍可启动时连接 ADB，重启到 fastboot 并记录解锁状态和当前槽位：
+
+```powershell
+adb reboot bootloader
+fastboot devices
+fastboot getvar unlocked
+fastboot getvar current-slot
+```
+
+2. 只有 `unlocked: yes` 且槽位明确为 `a` 或 `b` 才继续。记录结果。若命令不支持、没有设备或结果不确定，先查明正确方法，不要猜槽位。
+3. 回到 Android 后，按已验证的 Tab10CPro 流程进入 EDL。参考资料中使用 `adb reboot edl`；如果当前固件不支持或设备状态与参考不符，不要尝试短接/强制进入等未经验证的方式。
+
+### 2.2 在 Qualcomm 工具箱回读全分区
+
+1. 使用与设备硬件匹配、来源可信的 Qualcomm SDM855 firehose programmer/loader。工具中的 loader 必须确认是适用于该设备的版本；不要拿别的型号 loader 试错。
+2. 在 Qualcomm 工具箱选择正确的 loader 并执行“发送引导/Send programmer”，确认日志显示连接成功。
+3. 选择 **回读全部分区/Readback all partitions**，并启用生成 GPT 与 XML 的选项。输出到单独目录。工具版本的按钮名称可能不同，操作前确认所选功能是只读回读。
+4. 等待所有分区回读完成。检查 GPT/XML 已生成，分区列表与读回文件齐全，日志没有失败；不要只凭进度条结束就认为备份完整。
+5. 将完整输出目录复制到另一块存储，并为关键文件计算 SHA-256。保留原始 GPT、XML、全分区镜像和日志；这些是恢复与确认分区映射的重要依据。
+6. 根据生成的 GPT/XML 和分区清单定位 `boot_a`、`boot_b`。对照刚才记录的 `current-slot`，只取当前活动槽位对应的原始 boot 镜像。不要因为有两个 boot 文件就任选其一。
+
+> **只读阶段的边界**：此处只做回读和备份。不要在 Qualcomm 工具箱中选择全分区写入、擦除、格式化，也不要改写 GPT、modem、abl、xbl、vbmeta 或其他分区。
+
+### 2.3 OTA 提取作为备用取镜像路径
+
+只有 Qualcomm 工具箱回读不可行、且能严格确认 OTA 与当前构建匹配时，才考虑从官方 OTA 提取原始 boot。此路径不能替代全分区备份和 GPT/XML。
+
+1. 从设备官方更新渠道取得 Tab10CPro 当前构建的更新包，核对型号、地区和完整版本号。
+2. 若为 BOOX `.upx` 包，按 [decryptBooxUpdateUpx](https://github.com/Hagb/decryptBooxUpdateUpx) 项目说明，使用 `Tab10CPro` 型号参数解密。命令示例中的路径需替换成实际文件：
 
 ```powershell
 python DeBooxUpx.py Tab10CPro "C:\firmware\Tab10CPro.update.upx" "C:\firmware\Tab10CPro-update.zip"
 ```
 
-不要把其他设备或不同构建的包传入。若项目版本的参数格式有变化，以项目 README 为准。
-3. 从解密出的包中找到 `payload.bin`，用 [payload-dumper-go](https://github.com/ssut/payload-dumper-go) 解出分区镜像。命令格式如下：
+3. 从解密包中提取 `payload.bin`，使用 [payload-dumper-go](https://github.com/ssut/payload-dumper-go) 解包：
 
 ```powershell
 .\payload-dumper-go.exe "C:\firmware\payload.bin"
 ```
 
-确认输出中存在 boot 分区，并保留完整输出与来源信息。
-4. 对设备当前安装的完整构建号进行交叉核对。OTA 是增量包、版本不匹配、包结构无法确认时，不要把其中镜像当作当前原始 boot。
-
-### B. 从本机做 EDL 分区只读备份
-
-仅在确认 OTA 提取路径不可用、并能识别准确分区布局时使用。参考资料使用 Qualcomm SDM855 EDL programmer 和 QCTool 读取分区；loader 必须与设备硬件匹配且来自可信来源。
-
-1. 先用 fastboot 记录当前槽位；然后只使用 QCTool 的 **Readback/读取** 功能备份 GPT 与全部分区（或至少 GPT、当前活动槽位 boot 及必要的 vbmeta 信息）。
-2. 将回读结果另存两份，计算 SHA-256；记录文件名、分区名、分区起始/大小和对应构建号。
-3. 对照 GPT 确认当前槽位的 boot 分区。不要对 GPT、modem、abl、xbl、vbmeta 或整盘执行写入/擦除。
-4. EDL 读写、错误 loader 和全分区操作都可能使设备无法恢复。若 QCTool 显示的分区/文件大小不一致或界面按钮不明确，停止，不要试点写入。
-
-> 这一步只用于获得本机原始分区备份；它不代表可以使用其他设备的 loader 或镜像。
-
+4. 确认输出中包含可用的 boot 镜像，并证明它对应设备当前完整构建。增量包不含 boot、版本不符或来源不能确认时，不要使用此镜像。即使采用此备用方式，也要通过设备专用方法确认当前槽位和目标分区。
 ## 3. 在 Magisk 中修补
 
-1. 正常启动 Android，把确认过的原始 `boot.img`（或者由 Magisk 官方说明判定的其他正确镜像）复制到设备存储。
+1. 正常启动 Android，把从全分区回读中取出的**当前活动槽位原始 boot 镜像**复制到设备存储；确认文件对应 GPT/XML 里的 `boot_a` 或 `boot_b`。
 2. 安装并打开 Magisk App → 点 Magisk 卡片中的“安装”→“选择并修补一个文件”，选取原始镜像。
 3. 等待 App 完成，在日志中确认输出文件名类似 `magisk_patched-*.img`。将**刚生成的文件**复制回电脑；不要改用旧文件或别人分享的 patched 镜像。
 4. 对原始镜像和 patched 镜像分别计算 SHA-256，并保留哈希和 Magisk 日志。核实 patched 文件确实是本次修补生成、大小合理。
@@ -132,6 +146,8 @@ LSPosed 需要 Zygisk。此设备记录中使用 Magisk 内置 Zygisk。ZygiskNe
 - [Qualcomm SDM855 factory loaders](https://github.com/bkerler/Loaders/tree/main/qualcomm/factory/sdm855)
 
 本指南是针对已记录设备的经验记录，不是厂商支持或通用刷机保证。请只在自有且获准操作的设备上使用；刷写风险由操作者承担。
+
+
 
 
 
