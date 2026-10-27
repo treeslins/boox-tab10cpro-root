@@ -25,7 +25,7 @@
 
 本次设备操作记录：BOOX Tab10CPro，Android 13 / SDK 33，固件 4.2.1；Magisk 30.7（内部版本 30700）；Magisk 内置 Zygisk 已启用。通过与该固件匹配的 boot 镜像修补并刷入后，重启验证 root 可用。曾安装 LSPosed v2.2.1（build 7912）作为 Magisk/Zygisk 模块。此记录不代表所有同型号设备或后续固件都适用。
 
-本仓库不包含 boot/recovery/完整固件镜像、EDL programmer、设备分区备份、商业 APK、Magisk/LSPosed/ZygiskNext 安装包。仓库内的 AMS 修复模块仅匹配 Tab10CPro 固件 4.2.1；Qualcomm 工具箱从维护者的 [GeekFlashTool 高通资源包](https://gitee.com/geekflashtool/Package_Qualcomm_EDL)获取，本仓库不重新分发该第三方工具集。
+本仓库不包含 boot/recovery/完整固件镜像、EDL programmer、设备分区备份、商业 APK、Magisk/LSPosed/ZygiskNext 安装包。仓库内的 AMS 修复模块仅匹配 Tab10CPro 固件 4.2.1。\n\n### 高通工具箱\n\n- [高通工具箱下载（蓝奏云，用户提供）](https://syxz.lanzoue.com/b01g1c7ve)\n- [GeekFlashTool 高通资源包（维护者页面）](https://gitee.com/geekflashtool/Package_Qualcomm_EDL)\n\n下载后请自行确认文件来源、版本和 SHA-256；使用前确认 loader 与本机匹配。工具箱仅用于本指南中的 EDL 全分区回读、GPT/XML 生成和备份，不要选择全分区写入或擦除。
 
 ## 参考资料
 
