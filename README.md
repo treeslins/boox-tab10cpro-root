@@ -6,7 +6,7 @@
 
 ## 内容
 
-- `docs/ROOT-AND-MODULES.zh-CN.md`：准备、Magisk 修补、验证、模块安装和故障处理
+- `docs/ROOT-AND-MODULES.zh-CN.md`：详细 ROOT 流程（固件镜像、解锁检查、Magisk 修补、槽位确认、写入边界、验证与恢复）
 - `tools/Tab10CPro-Root-Module.ps1`：Windows PowerShell 辅助脚本，检测 ADB/root 并安装用户选择的模块 ZIP
 - `一键ROOT并安装模块.cmd`：启动入口
 
@@ -16,9 +16,9 @@
 2. 解压本仓库；把 `adb.exe` 放在 `tools` 目录，或将 platform-tools 加入 `PATH`。
 3. 双击 `一键ROOT并安装模块.cmd`，首次连接时在设备上确认 USB 调试授权。
 4. 已有 Magisk root 时，脚本可选择模块 ZIP 并请求 Magisk 安装。检查 ZIP 来源与兼容性，并对 SHA-256 做独立核验。
-5. 若尚未 root，脚本只显示人工步骤，不会下载、修补或刷写 boot 镜像。请阅读详细指南。
+5. 若尚未 root，脚本只显示提示，不会下载、修补或刷写 boot 镜像。请先按 [详细 ROOT 指南](docs/ROOT-AND-MODULES.zh-CN.md)完成手动流程。
 
-脚本不会自动重启、不会挑选 `.img` 文件，也不会尝试绕过 bootloader 锁或 Magisk 的授权界面。Android 端如果出现超级用户授权，由设备所有者亲自确认。
+**本仓库没有一键解锁或自动刷 boot 功能。**脚本不会自动重启、不会挑选 `.img` 文件，也不会尝试绕过 bootloader 锁或 Magisk 的授权界面。首次 ROOT 的准确步骤见详细指南。Android 端如果出现超级用户授权，由设备所有者亲自确认。
 
 ## 已验证情况与边界
 
@@ -38,3 +38,4 @@
 ## 免责声明
 
 本仓库仅供设备所有者研究和维护自有设备。刷机/ROOT 可能造成数据丢失、系统损坏或安全性下降；不提供任何保证。请勿在未经许可的设备上操作。第三方工具与模块由其各自作者负责。
+
