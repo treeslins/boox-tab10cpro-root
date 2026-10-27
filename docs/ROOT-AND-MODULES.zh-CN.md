@@ -59,7 +59,7 @@ fastboot getvar current-slot
 2. 只有 `unlocked: yes` 且槽位明确为 `a` 或 `b` 才继续。记录结果。若命令不支持、没有设备或结果不确定，先查明正确方法，不要猜槽位。
 3. 回到 Android 后，按已验证的 Tab10CPro 流程进入 EDL。参考资料中使用 `adb reboot edl`；如果当前固件不支持或设备状态与参考不符，不要尝试短接/强制进入等未经验证的方式。
 
-### 2.2 在 Qualcomm 工具箱回读全分区
+### 2.2 获取并使用 Qualcomm 工具箱\n\n- [高通工具箱下载地址（蓝奏云，用户提供）](https://syxz.lanzoue.com/b01g1c7ve)\n- [GeekFlashTool 高通资源包（维护者页面）](https://gitee.com/geekflashtool/Package_Qualcomm_EDL)\n\n下载后先核对工具版本和文件哈希，并确认 firehose loader 确实适配 Tab10CPro。本文所述操作只需要 EDL 回读、生成 GPT/XML 和保存备份；不要在工具中执行全分区写入、擦除或格式化。\n\n### 2.3 在 Qualcomm 工具箱回读全分区
 
 1. 使用与设备硬件匹配、来源可信的 Qualcomm SDM855 firehose programmer/loader。工具中的 loader 必须确认是适用于该设备的版本；不要拿别的型号 loader 试错。
 2. 在 Qualcomm 工具箱选择正确的 loader 并执行“发送引导/Send programmer”，确认日志显示连接成功。
@@ -70,7 +70,7 @@ fastboot getvar current-slot
 
 > **只读阶段的边界**：此处只做回读和备份。不要在 Qualcomm 工具箱中选择全分区写入、擦除、格式化，也不要改写 GPT、modem、abl、xbl、vbmeta 或其他分区。
 
-### 2.3 OTA 提取作为备用取镜像路径
+### 2.4 OTA 提取作为备用取镜像路径
 
 只有 Qualcomm 工具箱回读不可行、且能严格确认 OTA 与当前构建匹配时，才考虑从官方 OTA 提取原始 boot。此路径不能替代全分区备份和 GPT/XML。
 
@@ -163,7 +163,7 @@ LSPosed 需要 Zygisk。此设备记录中使用 Magisk 内置 Zygisk。ZygiskNe
 - [BOOX Tab10CPro 刷机/root 实机参考](https://doc.yoouu.cn/interest/flash/tab10cpro.html#root)（其中工具与分区操作仅适用于作者自己的设备环境）
 - [decryptBooxUpdateUpx](https://github.com/Hagb/decryptBooxUpdateUpx)
 - [payload-dumper-go](https://github.com/ssut/payload-dumper-go)
-- [GeekFlashTool 高通资源包（维护者下载页）](https://gitee.com/geekflashtool/Package_Qualcomm_EDL)
+- [高通工具箱下载地址（蓝奏云，用户提供）](https://syxz.lanzoue.com/b01g1c7ve)\n- [GeekFlashTool 高通资源包（维护者页面）](https://gitee.com/geekflashtool/Package_Qualcomm_EDL)
 - [Qualcomm SDM855 factory loaders](https://github.com/bkerler/Loaders/tree/main/qualcomm/factory/sdm855)
 
 本指南是针对已记录设备的经验记录，不是厂商支持或通用刷机保证。请只在自有且获准操作的设备上使用；刷写风险由操作者承担。
