@@ -50,14 +50,14 @@ fastboot getvar current-slot
 2. 若文件是 BOOX `.upx` 包，按 [decryptBooxUpdateUpx](https://github.com/Hagb/decryptBooxUpdateUpx) 的项目说明准备依赖；在 PowerShell 中用设备型号 `Tab10CPro` 解密。命令格式如下，路径替换成你自己的真实文件路径：
 
 ```powershell
-python DeBooxUpx.py Tab10CPro <Tab10CPro当前版本.update.upx> <解密后的更新包.zip>
+python DeBooxUpx.py Tab10CPro "C:\firmware\Tab10CPro.update.upx" "C:\firmware\Tab10CPro-update.zip"
 ```
 
 不要把其他设备或不同构建的包传入。若项目版本的参数格式有变化，以项目 README 为准。
 3. 从解密出的包中找到 `payload.bin`，用 [payload-dumper-go](https://github.com/ssut/payload-dumper-go) 解出分区镜像。命令格式如下：
 
 ```powershell
-.\payload-dumper-go.exe <解密目录\payload.bin>
+.\payload-dumper-go.exe "C:\firmware\payload.bin"
 ```
 
 确认输出中存在 boot 分区，并保留完整输出与来源信息。
@@ -132,4 +132,6 @@ LSPosed 需要 Zygisk。此设备记录中使用 Magisk 内置 Zygisk。ZygiskNe
 - [Qualcomm SDM855 factory loaders](https://github.com/bkerler/Loaders/tree/main/qualcomm/factory/sdm855)
 
 本指南是针对已记录设备的经验记录，不是厂商支持或通用刷机保证。请只在自有且获准操作的设备上使用；刷写风险由操作者承担。
+
+
 
