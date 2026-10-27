@@ -65,9 +65,10 @@ try {
         Write-Host '当前 ADB shell 尚未获得 root。首次 ROOT 请按以下步骤完成：' -ForegroundColor Yellow
         Write-Host '  1. 备份数据/原始分区，确认官方恢复包可用。'
         Write-Host '  2. 用 fastboot 确认 bootloader unlocked: yes，并记录 current-slot；状态不明就停止。'
-        Write-Host '  3. 准备本机当前构建的原始 boot.img，在 Magisk 中修补并保存本次生成的 patched 镜像。'
-        Write-Host '  4. 只按设备专用指南写入当前活动槽位 boot 分区；不要猜槽位或使用其他用途 IMG。'
-        Write-Host '  5. 重启后运行 adb shell su -c id 验证 uid=0(root)，再用本工具装模块。'
+        Write-Host '  3. 用 Qualcomm 工具箱进入 EDL，回读全部分区，并生成/保存 GPT 与 XML。'
+        Write-Host '  4. 从回读备份中取当前活动槽位的 boot 镜像，在 Magisk App 中修补。'
+        Write-Host '  5. 按设备专用指南只写回对应的 boot_<槽位>；不要猜槽位或用其他用途 IMG。'
+        Write-Host '  6. 重启后运行 adb shell su -c id 验证 uid=0(root)，再用本工具装模块。'
         Write-Host '详细步骤：docs\ROOT-AND-MODULES.zh-CN.md'
         Write-Host ''
         Write-Host '为避免误刷导致无法启动，本工具不会自动刷 boot，也不会触碰目录里已有 IMG。' -ForegroundColor Red
