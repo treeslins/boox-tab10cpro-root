@@ -129,6 +129,26 @@ ROOT 验证成功后，才安装模块：从作者官方渠道取 ZIP，核对 A
 
 LSPosed 需要 Zygisk。此设备记录中使用 Magisk 内置 Zygisk。ZygiskNext 是替代实现，遵循其文档关闭 Magisk 内置 Zygisk，勿同时启用两套实现。模块可能导致启动失败；使用 Magisk 官方救援方式禁用最近的模块或恢复官方固件。
 
+## 7. ROOT 后 Magisk 卡在启动页的原因与修复
+
+### 故障原因
+
+在这台 Tab10CPro 上，现象是 Magisk App 卡在启动页，但系统仍能正常启动，且 root 后台可能仍可用。这不是 Magisk 管理器一定“没装好”：BOOX 在 framework 的 `services.jar` 中修改了 `ActivityManagerService.addPackageDependency()`，增加了更新 WebView 使用包记录的逻辑。Magisk 的 root 守护进程（`RootServerMain`，uid 0）不是普通应用进程，不一定有对应的 `ProcessRecord`；BOOX 代码未判空就读取其 `info.packageName`，因此可能触发空指针异常，导致管理器启动卡死/崩溃，而 `su` 本身仍能工作。
+
+这个具体的空指针路径及一字节分支修复已由 [dynamicfire 的 P6 Pro 项目](https://github.com/dynamicfire/boox-p6pro-root)针对 BOOX 4.1 系列记录。我们在 Tab10CPro 4.2.1 上制作并验证了专用的 systemless 修复模块，说明这一类 AMS 空指针问题与本机现象吻合；不同设备/固件的 `services.jar` 不能互换，不能刷入 P6 Pro 的 4.1 模块代替本模块。
+
+### Tab10CPro 4.2.1 修复模块
+
+本机对应的模块 ZIP 名称为 `boox-ams-fix-tab10cpro-4.2.1.zip`，模块 ID 为 `boox-ams-fix-tab10cpro-421`。模块以 Magisk systemless overlay 替换 framework 的 `services.jar`，清理相关 Dalvik 缓存后重启生效。ZIP SHA-256：
+
+```text
+2EE43415F45772FE823CDB8E17694CE118A6304596FC0C2D622DEB0206012038
+```
+
+仅用于 BOOX Tab10CPro、Android 13、固件 4.2.1 且 `services.jar` 与本机匹配的环境。OTA 或系统更新后请先卸载此模块并重新验证；不要在其他机型/构建使用。若 Magisk App 打不开但 `su` 可用，应先按本机恢复流程安装/启用该匹配模块并重启；若无法确认 build 或 ZIP 哈希不一致，停止使用并恢复原系统文件。
+
+上游修复仓库也明确警告其 services.jar 仅针对指定 P6 Pro 固件，版本不符可能导致无法启动：[boox-ams-fix 兼容说明](https://github.com/dynamicfire/boox-ams-fix)。
+
 ## 出错时
 
 - `unauthorized`：解锁屏幕，在设备上批准 USB 调试 RSA；不要重复 root/刷写。
